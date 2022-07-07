@@ -31,7 +31,7 @@ function getDataWeather() {
     dataType: "json",
   }).done(function (data) {
     if (data.error) {
-      location.reload();
+      setTimeout(location.reload(), 4000);
     }
     console.log(data);
 
