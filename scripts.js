@@ -1,6 +1,7 @@
-var lat, lang, temp;
+var lat, lon, temp;
 $(document).ready(function () {
-  getDataWeather();
+  // getDataWeather();
+  getData(lat, lon);
 });
 
 $("#temp_type").click(function () {
@@ -17,37 +18,75 @@ navigator.geolocation.getCurrentPosition(showLocation);
 
 function showLocation(position) {
   lat = position.coords.latitude;
-  lang = position.coords.longitude;
+  lon = position.coords.longitude;
 }
 
-function getDataWeather() {
-  $.ajax({
-    url:
-      "https://weather-proxy.freecodecamp.rocks/api/current?lat=" +
-      lat +
-      "&lon=" +
-      lang,
-    method: "GET",
-    dataType: "json",
-  }).done(function (data) {
-    if (data.error) {
-      setTimeout(location.reload(), 4000);
-    }
-    console.log(data);
+function getData(lat, lon) {
+  // var params = {
+  //   lat,
+  //   lon,
+  // };
 
-    var weather = data["weather"][0].main;
-    var name = data["name"];
-    var country = data["sys"].country;
-    temp = data["main"].temp;
+  var url = "https://weather-proxy.freecodecamp.rocks/api/current?";
+  url += "lat=" + lat;
+  url += "&lon=" + lon;
 
-    $("#location").html(name + ", " + country);
-    $("#temp").html(temp);
-    $("#temp_type").html(" °C");
-    $("#weather").html(weather);
+  // Object.keys(params).forEach(function (key) {
+  //   url += key + "=" + params[key] + "&";
+  // });
 
-    changeWeather(weather);
-  });
+  fetch(url)
+    .then(function (response) {
+      return response.json();
+    })
+    .then(function (data) {
+      console.log(data);
+
+      var weather = data["weather"][0].main;
+      var name = data["name"];
+      var country = data["sys"].country;
+      temp = data["main"].temp;
+
+      $("#location").html(name + ", " + country);
+      $("#temp").html(temp);
+      $("#temp_type").html(" °C");
+      $("#weather").html(weather);
+
+      changeWeather(weather);
+    })
+    .catch(function (error) {
+      console.log(error);
+    });
 }
+
+// function getDataWeather() {
+//   $.ajax({
+//     url:
+//       "https://weather-proxy.freecodecamp.rocks/api/current?lat=" +
+//       lat +
+//       "&lon=" +
+//       lon,
+//     method: "GET",
+//     dataType: "json",
+//   }).done(function (data) {
+//     if (data.error) {
+//       setTimeout(location.reload(), 4000);
+//     }
+//     console.log(data);
+
+//     var weather = data["weather"][0].main;
+//     var name = data["name"];
+//     var country = data["sys"].country;
+//     temp = data["main"].temp;
+
+//     $("#location").html(name + ", " + country);
+//     $("#temp").html(temp);
+//     $("#temp_type").html(" °C");
+//     $("#weather").html(weather);
+
+//     changeWeather(weather);
+//   });
+// }
 
 function cToF(celsius) {
   var cToFahr = (celsius * 9) / 5 + 32;
